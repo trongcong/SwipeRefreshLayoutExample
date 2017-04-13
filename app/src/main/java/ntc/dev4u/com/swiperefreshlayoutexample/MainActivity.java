@@ -1,14 +1,17 @@
 package ntc.dev4u.com.swiperefreshlayoutexample;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
-    private RecyclerView recyclerView;
-    private SwipeRefreshLayout srlLayout;
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSrlLayout;
+    private RecyclerViewAdapter mRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +21,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        srlLayout = (SwipeRefreshLayout) findViewById(R.id.srlLayout);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mSrlLayout = (SwipeRefreshLayout) findViewById(R.id.srlLayout);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        setupAdapter();
+
+        mSrlLayout.setColorSchemeResources(R.color.orange, R.color.green, R.color.blue);
+        mSrlLayout.setOnRefreshListener(this);
+    }
+
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setupAdapter();
+                mSrlLayout.setRefreshing(false);
+            }
+        }, 2500);
+    }
+
+    private void setupAdapter() {
+        mRecyclerViewAdapter = new RecyclerViewAdapter(this);
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
     }
 }
